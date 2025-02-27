@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'package:work_up/utils/routes.dart';
 import 'package:work_up/view/home_screen.dart';
-
+import 'package:work_up/view/login_screen.dart';
 import 'provider/employee_provider.dart';
 import 'utils/theme.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
   runApp(
     MultiProvider(
       providers: [
@@ -16,17 +21,16 @@ void main() {
   );
 }
 
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Be Talent',
+      title: 'WorkUp',
       theme: appTheme,
-      home: const HomeScreen(),
+      initialRoute: AppRouter.loginRoute,
+      onGenerateRoute: AppRouter.generateRoute,
     );
   }
 }
-
