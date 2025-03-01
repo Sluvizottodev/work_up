@@ -1,23 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'package:work_up/provider/organization_provider.dart';
+import 'package:work_up/repository/organization_repo.dart';
+import 'package:work_up/service/organization_service.dart';
 import 'package:work_up/utils/routes.dart';
-import 'package:work_up/view/home_screen.dart';
-import 'package:work_up/view/login_screen.dart';
 import 'provider/employee_provider.dart';
+import 'provider/user_provider.dart';
 import 'utils/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+    await Firebase.initializeApp();
+
+  final organizationService = OrganizationService(OrganizationRepository());
 
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => EmployeeProvider()..loadEmployees()),
-      ],
-      child: const MyApp(),
-    ),
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => EmployeeProvider()..loadEmployees()),
+          ChangeNotifierProvider(create: (_) => OrganizationProvider(organizationService)),
+          ChangeNotifierProvider(create: (_) => UserProvider()..loadUser()),
+        ],
+        child: const MyApp(),
+      ),
   );
 }
 
