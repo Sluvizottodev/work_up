@@ -1,11 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../service/auth_service.dart';
-import '../utils/colors.dart';
-import '../utils/space.dart';
-import '../utils/typography.dart';
-import '../utils/validator/email_validator.dart';
-import '../utils/validator/password_validator.dart';
+import 'package:provider/provider.dart';
+import '../../provider/user_provider.dart';
+import '../../service/auth_service.dart';
+import '../../service/cloud_firestore/save_user_data_firebase.dart';
+import '../../utils/colors.dart';
+import '../../utils/space.dart';
+import '../../utils/typography.dart';
+import '../../utils/validator/email_validator.dart';
+import '../../utils/validator/password_validator.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -206,12 +209,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
     try {
       User? user = await _authService.register(email, password);
       if (user != null) {
-        // Aqui você pode salvar o nome do usuário no Firestore ou Realtime Database
-        print('Usuário registrado com sucesso: ${user.uid}');
-        Navigator.of(context).pop(); // Volta para a tela de login
+        // Salva os dados do usuário no Firestore
+        await saveUserData(user.uid, name, email);
+
+        // Carrega os dados do usuário no UserProvider
+        await Provider.of<UserProvider>(context, listen: false).loadUser();
+
+        // Navega para a tela inicial
+        Navigator.of(context).pushReplacementNamed('/home');
       }
     } catch (e) {
       print('Erro ao registrar: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao registrar: $e')),
+      );
     }
   }
 }

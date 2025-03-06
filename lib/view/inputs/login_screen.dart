@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../controller/auth_controller.dart';
-import '../utils/colors.dart';
-import '../utils/space.dart';
-import '../utils/typography.dart';
+import '../../controller/auth_controller.dart';
+import '../../utils/colors.dart';
+import '../../utils/space.dart';
+import '../../utils/typography.dart';
 
 class LoginScreen extends StatelessWidget {
   final AuthController _authController = AuthController();
@@ -82,12 +82,19 @@ class LoginScreen extends StatelessWidget {
             ),
             SizedBox(height: AppSpacing.medium40),
             ElevatedButton(
-              onPressed: () {
-                _authController.login(
-                  context,
-                  _emailController.text,
-                  _passwordController.text,
-                );
+              onPressed: () async {
+                try {
+                  await _authController.login(
+                    context,
+                    _emailController.text.trim(),
+                    _passwordController.text.trim(),
+                  );
+                } catch (e) {
+                  print("Erro ao fazer login: $e");
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Erro ao fazer login: $e')),
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.BluePrimary,
